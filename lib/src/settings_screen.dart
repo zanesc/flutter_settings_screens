@@ -916,7 +916,6 @@ class SettingsContainer extends StatelessWidget {
       ),
       child: Material(
         child: Container(
-          padding: EdgeInsets.only(left: 4.0),
           child: child,
         ),
       ),
