@@ -74,22 +74,30 @@ import 'settings.dart';
 /// );
 /// ```
 class SettingsScreen extends StatelessWidget {
+  final Color scaffoldColour;
+
+  final Color appBarColour;
+
   /// Appbar title in Scaffold.
-  final String title;
+  final Widget title;
 
   /// Content of the screen, body of the Scaffold.
   final List<Widget> children;
 
   SettingsScreen({
-    this.title = 'Settings',
+    this.title,
+    this.scaffoldColour,
+    this.appBarColour,
     @required this.children,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: scaffoldColour,
       appBar: AppBar(
-        title: Text(title),
+        backgroundColor: appBarColour,
+        title: title,
       ),
       body: ListView.builder(
         shrinkWrap: true,
@@ -115,6 +123,8 @@ class _SettingsTile extends StatefulWidget {
   /// subtitle string for the tile
   final String subtitle;
 
+  final Color subtitleColor;
+
   /// flag to represent if the tile is accessible or not, if false user input is ignored
   final bool enabled;
 
@@ -139,6 +149,7 @@ class _SettingsTile extends StatefulWidget {
     this.enabled = true,
     this.showChildBelow = false,
     this.leading,
+    this.subtitleColor,
   });
 
   @override
@@ -168,7 +179,8 @@ class __SettingsTileState extends State<_SettingsTile> {
                 ? null
                 : Text(
                     widget.subtitle,
-                    style: subtitleTextStyle(context),
+                    style: subtitleTextStyle(context)
+                        .copyWith(color: widget.subtitleColor),
                   ),
             enabled: widget.enabled,
             onTap: widget.enabled ? widget.onTap : null,
@@ -224,19 +236,19 @@ class __SimpleHeaderTileState extends State<_SimpleHeaderTile> {
     return AbsorbPointer(
       child: Material(
         color: widget.color,
-      child: ListTile(
-        title: Text(
-          widget.title,
-          style: headerTextStyle(context),
+        child: ListTile(
+          title: Text(
+            widget.title,
+            style: headerTextStyle(context),
+          ),
+          subtitle: widget.subtitle.isNotEmpty
+              ? Text(
+                  widget.subtitle,
+                  style: subtitleTextStyle(context),
+                )
+              : null,
+          leading: widget.leading,
         ),
-        subtitle: widget.subtitle.isNotEmpty
-            ? Text(
-          widget.subtitle,
-          style: subtitleTextStyle(context),
-        )
-            : null,
-        leading: widget.leading,
-      ),
       ),
     );
   }
@@ -367,7 +379,7 @@ class __ModalSettingsTileState extends State<_ModalSettingsTile> {
         ),
         enabled: widget.enabled,
         onTap:
-        widget.enabled ? () => _showWidget(context, widget.children) : null,
+            widget.enabled ? () => _showWidget(context, widget.children) : null,
         dense: true,
       ),
     );
@@ -388,8 +400,8 @@ class __ModalSettingsTileState extends State<_ModalSettingsTile> {
         });
   }
 
-  List<Widget> _finalWidgets(BuildContext dialogContext,
-      List<Widget> children) {
+  List<Widget> _finalWidgets(
+      BuildContext dialogContext, List<Widget> children) {
     if (widget.showConfirmation == null || !widget.showConfirmation) {
       return children;
     }
@@ -399,16 +411,16 @@ class __ModalSettingsTileState extends State<_ModalSettingsTile> {
   Widget getTitle() {
     return widget.leading != null
         ? Row(
-      children: <Widget>[
-        widget.leading,
-        Text(widget.title, style: headerTextStyle(context)),
-      ],
-    )
+            children: <Widget>[
+              widget.leading,
+              Text(widget.title, style: headerTextStyle(context)),
+            ],
+          )
         : Text(widget.title, style: headerTextStyle(context));
   }
 
-  List<Widget> _addActionWidgets(BuildContext dialogContext,
-      List<Widget> children) {
+  List<Widget> _addActionWidgets(
+      BuildContext dialogContext, List<Widget> children) {
     final finalList = List<Widget>.from(children);
     finalList.add(Row(
       mainAxisAlignment: MainAxisAlignment.end,
@@ -584,7 +596,7 @@ class _SettingsDropDown<T> extends StatelessWidget {
           dropdownColor: color,
           underline: Container(),
           items: values.map<DropdownMenuItem<T>>(
-                (T val) {
+            (T val) {
               return DropdownMenuItem<T>(
                 child: itemBuilder(val),
                 value: val,
@@ -614,6 +626,12 @@ class _SettingsSlider extends StatelessWidget {
   /// on change callback to handle the value change
   final OnChanged<double> onChanged;
 
+  /// on change start callback to handle the value change
+  final OnChanged<double> onChangeStart;
+
+  /// on change end callback to handle the value change
+  final OnChanged<double> onChangeEnd;
+
   /// flag which represents the state of the settings, if false the the tile will
   /// ignore all the user inputs
   final bool enabled;
@@ -623,8 +641,10 @@ class _SettingsSlider extends StatelessWidget {
     @required this.min,
     @required this.max,
     @required this.step,
-    @required this.onChanged,
     @required this.enabled,
+    @required this.onChanged,
+    this.onChangeStart,
+    this.onChangeEnd,
   });
 
   @override
@@ -635,6 +655,8 @@ class _SettingsSlider extends StatelessWidget {
       max: max,
       divisions: (max - min) ~/ (step),
       onChanged: enabled ? onChanged : null,
+      onChangeStart: enabled ? onChangeStart : null,
+      onChangeEnd: enabled ? onChangeEnd : null,
     );
   }
 }
@@ -728,6 +750,8 @@ class SimpleSettingsTile extends StatelessWidget {
   /// subtitle string for the tile
   final String subtitle;
 
+  final Color subtitleColor;
+
   /// widget to be placed at first in the tile
   final Widget leading;
 
@@ -743,15 +767,15 @@ class SimpleSettingsTile extends StatelessWidget {
 
   final VoidCallback onTap;
 
-  SimpleSettingsTile({
-    @required this.title,
-    this.subtitle,
-    this.child,
-    this.enabled = true,
-    this.color,
-    this.leading,
-    this.onTap,
-  });
+  SimpleSettingsTile(
+      {@required this.title,
+      this.subtitle,
+      this.child,
+      this.enabled = true,
+      this.color,
+      this.leading,
+      this.onTap,
+      this.subtitleColor});
 
   @override
   Widget build(BuildContext context) {
@@ -759,6 +783,7 @@ class SimpleSettingsTile extends StatelessWidget {
       leading: leading,
       title: title,
       subtitle: subtitle,
+      subtitleColor: subtitleColor,
       enabled: enabled,
       color: color,
       child: child != null ? getIcon(context) : Text(''),
@@ -1083,10 +1108,8 @@ class SettingsGroup extends StatelessWidget {
 
   TextStyle groupStyle(BuildContext context) {
     return TextStyle(
-      color: Theme
-          .of(context)
-          .accentColor,
-      fontSize: 12.0,
+      color: Theme.of(context).accentColor,
+      fontSize: 16.0,
       fontWeight: FontWeight.bold,
     );
   }
@@ -1213,8 +1236,8 @@ class _TextInputSettingsTileState extends State<TextInputSettingsTile> {
     return ValueChangeObserver<String>(
       cacheKey: widget.settingKey,
       defaultValue: widget.initialValue,
-      builder:
-          (BuildContext context, String value, OnChanged<String> onChanged) {
+      builder: (BuildContext context, String value, OnChanged<String> onChanged,
+          {OnChanged<String> onChangeStart, OnChanged<String> onChangeEnd}) {
         _controller.text = value;
         return _ModalSettingsTile(
           title: widget.title,
@@ -1233,8 +1256,8 @@ class _TextInputSettingsTileState extends State<TextInputSettingsTile> {
     );
   }
 
-  Widget _buildTextField(BuildContext context, String value,
-      OnChanged<String> onChanged) {
+  Widget _buildTextField(
+      BuildContext context, String value, OnChanged<String> onChanged) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -1382,7 +1405,8 @@ class SwitchSettingsTile extends StatelessWidget {
     return ValueChangeObserver<bool>(
       cacheKey: settingKey,
       defaultValue: defaultValue,
-      builder: (BuildContext context, bool value, OnChanged<bool> onChanged) {
+      builder: (BuildContext context, bool value, OnChanged<bool> onChanged,
+          {OnChanged<bool> onChangeStart, OnChanged<bool> onChangeEnd}) {
         Widget mainWidget = _SettingsTile(
           leading: leading,
           title: title,
@@ -1390,9 +1414,9 @@ class SwitchSettingsTile extends StatelessWidget {
           color: color,
           onTap: enabled ? () => onChanged(!value) : null,
           child: _SettingsSwitch(
-            value: value,
+            value: defaultValue,
             onChanged:
-            enabled ? (value) => _onSwitchChange(value, onChanged) : null,
+                enabled ? (value) => _onSwitchChange(value, onChanged) : null,
             enabled: enabled,
           ),
         );
@@ -1520,7 +1544,8 @@ class CheckboxSettingsTile extends StatelessWidget {
     return ValueChangeObserver<bool>(
       cacheKey: settingKey,
       defaultValue: defaultValue,
-      builder: (BuildContext context, bool value, OnChanged<bool> onChanged) {
+      builder: (BuildContext context, bool value, OnChanged<bool> onChanged,
+          {OnChanged<bool> onChangeStart, OnChanged<bool> onChangeEnd}) {
         var mainWidget = _SettingsTile(
           leading: leading,
           title: title,
@@ -1530,7 +1555,7 @@ class CheckboxSettingsTile extends StatelessWidget {
           child: _SettingsCheckbox(
             value: value,
             onChanged:
-            enabled ? (value) => _onCheckboxChange(value, onChanged) : null,
+                enabled ? (value) => _onCheckboxChange(value, onChanged) : null,
             enabled: enabled,
           ),
         );
@@ -1673,7 +1698,8 @@ class _RadioSettingsTileState<T> extends State<RadioSettingsTile<T>> {
     return ValueChangeObserver<T>(
       cacheKey: widget.settingKey,
       defaultValue: selectedValue,
-      builder: (BuildContext context, T value, OnChanged<T> onChanged) {
+      builder: (BuildContext context, T value, OnChanged<T> onChanged,
+          {OnChanged<T> onChangeStart, OnChanged<T> onChangeEnd}) {
         return SettingsContainer(
           color: widget.containerColor,
           children: <Widget>[
@@ -1697,21 +1723,21 @@ class _RadioSettingsTileState<T> extends State<RadioSettingsTile<T>> {
 
   bool get showTitles => widget.showTitles ?? true;
 
-  Widget _buildRadioTiles(BuildContext context, T groupValue,
-      OnChanged<T> onChanged) {
+  Widget _buildRadioTiles(
+      BuildContext context, T groupValue, OnChanged<T> onChanged) {
     List<Widget> radioList =
-    widget.values.entries.map<Widget>((MapEntry<T, String> entry) {
+        widget.values.entries.map<Widget>((MapEntry<T, String> entry) {
       return _SettingsTile(
         title: entry.value,
         color: widget.color,
         onTap:
-        widget.enabled ? () => _onRadioChange(entry.key, onChanged) : null,
+            widget.enabled ? () => _onRadioChange(entry.key, onChanged) : null,
         child: _SettingsRadio<T>(
           value: entry.key,
           onChanged: widget.enabled
               ? (T newValue) {
-            _onRadioChange(newValue, onChanged);
-          }
+                  _onRadioChange(newValue, onChanged);
+                }
               : null,
           enabled: widget.enabled,
           groupValue: groupValue,
@@ -1808,7 +1834,8 @@ class _DropDownSettingsTileState<T> extends State<DropDownSettingsTile<T>> {
     return ValueChangeObserver<T>(
       cacheKey: widget.settingKey,
       defaultValue: selectedValue,
-      builder: (BuildContext context, T value, OnChanged<T> onChanged) {
+      builder: (BuildContext context, T value, OnChanged<T> onChanged,
+          {OnChanged<T> onChangeStart, OnChanged<T> onChangeEnd}) {
         return SettingsContainer(
           color: widget.containerColor,
           children: <Widget>[
@@ -1818,13 +1845,13 @@ class _DropDownSettingsTileState<T> extends State<DropDownSettingsTile<T>> {
               color: widget.color,
               leading: widget.leading,
               child: _SettingsDropDown<T>(
-                selected: value,
+                selected: widget.selected,
                 color: widget.dropDownMenuColor,
                 values: widget.values.keys.toList().cast<T>(),
                 onChanged: widget.enabled
                     ? (T newValue) {
-                  _handleDropDownChange(newValue, onChanged);
-                }
+                        _handleDropDownChange(newValue, onChanged);
+                      }
                     : null,
                 enabled: widget.enabled,
                 itemBuilder: (T value) {
@@ -1882,6 +1909,11 @@ class SliderSettingsTile extends StatefulWidget {
   final double max;
   final double step;
   final OnChanged<double> onChange;
+  final OnChanged<double> onChangeStart;
+  final OnChanged<double> onChangeEnd;
+  final bool updateCacheOnChanged;
+  final bool updateCacheOnChangeStart;
+  final bool updateCacheOnChangeEnd;
   final Widget leading;
 
   SliderSettingsTile({
@@ -1896,6 +1928,11 @@ class SliderSettingsTile extends StatefulWidget {
     @required this.max,
     this.step = 1.0,
     this.onChange,
+    this.onChangeStart,
+    this.onChangeEnd,
+    this.updateCacheOnChanged,
+    this.updateCacheOnChangeStart,
+    this.updateCacheOnChangeEnd,
     this.leading,
     this.subtitle = '',
   });
@@ -1917,9 +1954,12 @@ class _SliderSettingsTileState extends State<SliderSettingsTile> {
   Widget build(BuildContext context) {
     return ValueChangeObserver<double>(
       cacheKey: widget.settingKey,
+      updateCacheOnChanged: widget.updateCacheOnChanged,
+      updateCacheOnChangeStart: widget.updateCacheOnChangeStart,
+      updateCacheOnChangeEnd: widget.updateCacheOnChangeEnd,
       defaultValue: currentValue,
-      builder:
-          (BuildContext context, double value, OnChanged<double> onChanged) {
+      builder: (BuildContext context, double value, OnChanged<double> onChanged,
+          {OnChanged<double> onChangeStart, OnChanged<double> onChangeEnd}) {
         debugPrint('creating settings Tile: ${widget.settingKey}');
         return SettingsContainer(
           color: widget.containerColor,
@@ -1935,7 +1975,14 @@ class _SliderSettingsTileState extends State<SliderSettingsTile> {
             _SettingsSlider(
               onChanged: widget.enabled
                   ? (double newValue) =>
-                  _handleSliderChanged(newValue, onChanged)
+                      _handleSliderChanged(newValue, onChanged)
+                  : null,
+              onChangeStart: widget.enabled
+                  ? (double newValue) =>
+                      _handleSliderStart(newValue, onChangeStart)
+                  : null,
+              onChangeEnd: widget.enabled
+                  ? (double newValue) => _handleSliderEnd(newValue, onChangeEnd)
                   : null,
               enabled: widget.enabled,
               value: value,
@@ -1955,6 +2002,22 @@ class _SliderSettingsTileState extends State<SliderSettingsTile> {
     onChanged(newValue);
     if (widget.onChange != null) {
       widget.onChange(newValue);
+    }
+  }
+
+  void _handleSliderStart(double newValue, OnChanged<double> onChangeStart) {
+    currentValue = newValue;
+    onChangeStart?.call(newValue);
+    if (widget.onChangeStart != null) {
+      widget.onChangeStart(newValue);
+    }
+  }
+
+  void _handleSliderEnd(double newValue, OnChanged<double> onChangeEnd) {
+    currentValue = newValue;
+    onChangeEnd?.call(newValue);
+    if (widget.onChangeEnd != null) {
+      widget.onChangeEnd(newValue);
     }
   }
 }
@@ -2028,8 +2091,8 @@ class _ColorPickerSettingsTileState extends State<ColorPickerSettingsTile> {
     return ValueChangeObserver<String>(
       cacheKey: widget.settingKey,
       defaultValue: currentValue,
-      builder:
-          (BuildContext context, String value, OnChanged<String> onChanged) {
+      builder: (BuildContext context, String value, OnChanged<String> onChanged,
+          {OnChanged<String> onChangeStart, OnChanged<String> onChangeEnd}) {
         debugPrint('creating settings Tile: ${widget.settingKey}');
         return _SettingsColorPicker(
           title: widget.title,
@@ -2130,7 +2193,8 @@ class _RadioModalSettingsTileState<T> extends State<RadioModalSettingsTile<T>> {
     return ValueChangeObserver<T>(
       cacheKey: widget.settingKey,
       defaultValue: selectedValue,
-      builder: (BuildContext context, T value, OnChanged<T> onChanged) {
+      builder: (BuildContext context, T value, OnChanged<T> onChanged,
+          {OnChanged<T> onChangeStart, OnChanged<T> onChangeEnd}) {
         return _ModalSettingsTile(
           children: <Widget>[
             RadioSettingsTile(
@@ -2188,6 +2252,11 @@ class SliderModalSettingsTile extends StatefulWidget {
   final double max;
   final double step;
   final OnChanged<double> onChange;
+  final OnChanged<double> onChangeStart;
+  final OnChanged<double> onChangeEnd;
+  final bool updateCacheOnChanged;
+  final bool updateCacheOnChangeStart;
+  final bool updateCacheOnChangeEnd;
 
   SliderModalSettingsTile({
     @required this.title,
@@ -2198,6 +2267,11 @@ class SliderModalSettingsTile extends StatefulWidget {
     @required this.max,
     this.step = 0.0,
     this.onChange,
+    this.onChangeStart,
+    this.onChangeEnd,
+    this.updateCacheOnChanged,
+    this.updateCacheOnChangeStart,
+    this.updateCacheOnChangeEnd,
     this.subtitle = '',
   });
 
@@ -2219,9 +2293,12 @@ class _SliderModalSettingsTileState extends State<SliderModalSettingsTile> {
   Widget build(BuildContext context) {
     return ValueChangeObserver<double>(
       cacheKey: widget.settingKey,
+      updateCacheOnChanged: widget.updateCacheOnChanged,
+      updateCacheOnChangeStart: widget.updateCacheOnChangeStart,
+      updateCacheOnChangeEnd: widget.updateCacheOnChangeEnd,
       defaultValue: currentValue,
-      builder:
-          (BuildContext context, double value, OnChanged<double> onChanged) {
+      builder: (BuildContext context, double value, OnChanged<double> onChanged,
+          {OnChanged<double> onChangeStart, OnChanged<double> onChangeEnd}) {
         debugPrint('creating settings Tile: ${widget.settingKey}');
         return SettingsContainer(
           children: <Widget>[
@@ -2235,6 +2312,14 @@ class _SliderModalSettingsTileState extends State<SliderModalSettingsTile> {
                   onChanged: widget.enabled
                       ? (double newValue) =>
                           _handleSliderChanged(newValue, onChanged)
+                      : null,
+                  onChangeStart: widget.enabled
+                      ? (double newValue) =>
+                          _handleSliderStart(newValue, onChangeStart)
+                      : null,
+                  onChangeEnd: widget.enabled
+                      ? (double newValue) =>
+                          _handleSliderEnd(newValue, onChangeEnd)
                       : null,
                   enabled: widget.enabled,
                   value: value,
@@ -2255,6 +2340,22 @@ class _SliderModalSettingsTileState extends State<SliderModalSettingsTile> {
     onChanged(newValue);
     if (widget.onChange != null) {
       widget.onChange(newValue);
+    }
+  }
+
+  void _handleSliderStart(double newValue, OnChanged<double> onChangeStart) {
+    currentValue = newValue;
+    onChangeStart?.call(newValue);
+    if (widget.onChangeStart != null) {
+      widget.onChangeStart(newValue);
+    }
+  }
+
+  void _handleSliderEnd(double newValue, OnChanged<double> onChangeEnd) {
+    currentValue = newValue;
+    onChangeEnd?.call(newValue);
+    if (widget.onChangeEnd != null) {
+      widget.onChangeEnd(newValue);
     }
   }
 }
@@ -2404,15 +2505,9 @@ class SimpleDropDownSettingsTile extends StatelessWidget {
 }
 
 TextStyle headerTextStyle(BuildContext context) =>
-    Theme
-        .of(context)
-        .textTheme
-        .headline6
-        .copyWith(fontSize: 16.0);
+    Theme.of(context).textTheme.headline6.copyWith(fontSize: 16.0);
 
-TextStyle subtitleTextStyle(BuildContext context) =>
-    Theme
-        .of(context)
-        .textTheme
-        .subtitle2
-        .copyWith(fontSize: 13.0, fontWeight: FontWeight.normal);
+TextStyle subtitleTextStyle(BuildContext context) => Theme.of(context)
+    .textTheme
+    .subtitle2
+    .copyWith(fontSize: 14.0, fontWeight: FontWeight.bold);

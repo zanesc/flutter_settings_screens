@@ -22,6 +22,7 @@ class _AppSettingsState extends State<AppSettings> {
                 subtitle: 'Wi-Fi allows interacting with the local network '
                     'or internet via connecting to a W-Fi router',
                 enabledLabel: 'Enabled',
+                color: Colors.green,
                 disabledLabel: 'Disabled',
                 leading: Icon(Icons.wifi),
                 onChange: (value) {
@@ -34,6 +35,7 @@ class _AppSettingsState extends State<AppSettings> {
                 subtitle: 'Bluetooth allows interacting with the '
                     'near by bluetooth enabled devices',
                 enabledLabel: 'Enabled',
+                color: Colors.green,
                 disabledLabel: 'Disabled',
                 leading: Icon(Icons.bluetooth),
                 onChange: (value) {
@@ -44,6 +46,7 @@ class _AppSettingsState extends State<AppSettings> {
                 leading: Icon(Icons.developer_mode),
                 settingKey: 'key-switch-dev-mode',
                 title: 'Developer Settings',
+                color: Colors.green,
                 onChange: (value) {
                   debugPrint('key-switch-dev-mod: $value');
                 },
@@ -52,6 +55,7 @@ class _AppSettingsState extends State<AppSettings> {
                     leading: Icon(Icons.adb),
                     settingKey: 'key-is-developer',
                     title: 'Developer Mode',
+                    color: Colors.green,
                     onChange: (value) {
                       debugPrint('key-is-developer: $value');
                     },
@@ -60,6 +64,7 @@ class _AppSettingsState extends State<AppSettings> {
                     leading: Icon(Icons.usb),
                     settingKey: 'key-is-usb-debugging',
                     title: 'USB Debugging',
+                    color: Colors.green,
                     onChange: (value) {
                       debugPrint('key-is-usb-debugging: $value');
                     },
@@ -68,9 +73,11 @@ class _AppSettingsState extends State<AppSettings> {
                     title: 'Root Settings',
                     subtitle: 'These setting is not accessible',
                     enabled: false,
+                    color: Colors.green,
                   ),
                   SimpleSettingsTile(
                     title: 'Custom Settings',
+                    color: Colors.green,
                     subtitle: 'Tap to execute custom callback',
                     onTap: () => debugPrint('Snackbar action'),
                   ),
@@ -79,12 +86,14 @@ class _AppSettingsState extends State<AppSettings> {
               SimpleSettingsTile(
                 title: 'More Settings',
                 subtitle: 'General App Settings',
+                color: Colors.green,
                 child: SettingsScreen(
                   title: "App Settings",
                   children: <Widget>[
                     CheckboxSettingsTile(
                       leading: Icon(Icons.adb),
                       settingKey: 'key-is-developer',
+                      color: Colors.green,
                       title: 'Developer Mode',
                       onChange: (bool value) {
                         debugPrint('Developer Mode ${value ? 'on' : 'off'}');
@@ -93,6 +102,7 @@ class _AppSettingsState extends State<AppSettings> {
                     SwitchSettingsTile(
                       leading: Icon(Icons.usb),
                       settingKey: 'key-is-usb-debugging',
+                      color: Colors.green,
                       title: 'USB Debugging',
                       onChange: (value) {
                         debugPrint('USB Debugging: $value');
@@ -130,11 +140,13 @@ class _AppSettingsState extends State<AppSettings> {
               ModalSettingsTile(
                 title: 'Quick setting dialog',
                 subtitle: 'Settings on a dialog',
+                color: Colors.green,
                 children: <Widget>[
                   CheckboxSettingsTile(
                     settingKey: 'key-day-light-savings',
                     title: 'Daylight Time Saving',
                     enabledLabel: 'Enabled',
+                    color: Colors.green,
                     disabledLabel: 'Disabled',
                     leading: Icon(Icons.timelapse),
                     onChange: (value) {
@@ -145,6 +157,7 @@ class _AppSettingsState extends State<AppSettings> {
                     settingKey: 'key-dark-mode',
                     title: 'Dark Mode',
                     enabledLabel: 'Enabled',
+                    color: Colors.green,
                     disabledLabel: 'Disabled',
                     leading: Icon(Icons.palette),
                     onChange: (value) {
@@ -156,12 +169,14 @@ class _AppSettingsState extends State<AppSettings> {
               ExpandableSettingsTile(
                 title: 'Quick setting 2',
                 subtitle: 'Expandable Settings',
+                color: Colors.green,
                 children: <Widget>[
                   CheckboxSettingsTile(
                     settingKey: 'key-day-light-savings-2',
                     title: 'Daylight Time Saving',
                     enabledLabel: 'Enabled',
                     disabledLabel: 'Disabled',
+                    color: Colors.green,
                     leading: Icon(Icons.timelapse),
                     onChange: (value) {
                       debugPrint('key-day-light-savings-2: $value');
@@ -171,6 +186,7 @@ class _AppSettingsState extends State<AppSettings> {
                     settingKey: 'key-dark-mode-2',
                     title: 'Dark Mode',
                     enabledLabel: 'Enabled',
+                    color: Colors.green,
                     disabledLabel: 'Disabled',
                     leading: Icon(Icons.palette),
                     onChange: (value) {
@@ -186,6 +202,7 @@ class _AppSettingsState extends State<AppSettings> {
             children: <Widget>[
               RadioSettingsTile<int>(
                 title: 'Preferred Sync Period',
+                color: Colors.green,
                 settingKey: 'key-radio-sync-period',
                 values: <int, String>{
                   0: 'Never',
@@ -201,6 +218,7 @@ class _AppSettingsState extends State<AppSettings> {
               ),
               DropDownSettingsTile<int>(
                 title: 'E-Mail View',
+                color: Colors.green,
                 settingKey: 'key-dropdown-email-view',
                 values: <int, String>{
                   2: 'Simple',
@@ -218,10 +236,12 @@ class _AppSettingsState extends State<AppSettings> {
           ),
           ModalSettingsTile(
             title: 'Group Settings',
+            color: Colors.green,
             subtitle: 'Same group settings but in a dialog',
             children: <Widget>[
               SimpleRadioSettingsTile(
                 title: 'Sync Settings',
+                color: Colors.green,
                 settingKey: 'key-radio-sync-settings',
                 values: <String>[
                   'Never',
@@ -237,6 +257,7 @@ class _AppSettingsState extends State<AppSettings> {
               ),
               SimpleDropDownSettingsTile(
                 title: 'Beauty Filter',
+                color: Colors.green,
                 settingKey: 'key-dropdown-beauty-filter',
                 values: <String>[
                   'Simple',
@@ -256,10 +277,12 @@ class _AppSettingsState extends State<AppSettings> {
           ),
           ExpandableSettingsTile(
             title: 'Expandable Group Settings',
+            color: Colors.green,
             subtitle: 'Group of settings (expandable)',
             children: <Widget>[
               RadioSettingsTile<double>(
                 title: 'Beauty Filter',
+                color: Colors.green,
                 settingKey: 'key-radio-beauty-filter-exapndable',
                 values: <double, String>{
                   1.0: 'Simple',
@@ -277,6 +300,7 @@ class _AppSettingsState extends State<AppSettings> {
               ),
               DropDownSettingsTile<int>(
                 title: 'Preferred Sync Period',
+                color: Colors.green,
                 settingKey: 'key-dropdown-sync-period-2',
                 values: <int, String>{
                   0: 'Never',
@@ -297,6 +321,7 @@ class _AppSettingsState extends State<AppSettings> {
             children: <Widget>[
               SliderSettingsTile(
                 title: 'Volume',
+                color: Colors.green,
                 settingKey: 'key-slider-volume',
                 defaultValue: 20,
                 min: 0,
@@ -311,6 +336,7 @@ class _AppSettingsState extends State<AppSettings> {
                 settingKey: 'key-color-picker',
                 title: 'Accent Color',
                 defaultValue: Colors.blue,
+                color:Colors.green,
                 onChange: (value) {
                   debugPrint('key-color-picker: $value');
                 },
@@ -320,11 +346,13 @@ class _AppSettingsState extends State<AppSettings> {
           ModalSettingsTile(
             title: 'Other settings',
             subtitle: 'Other Settings in a Dialog',
+            color: Colors.green,
             children: <Widget>[
               SliderSettingsTile(
                 title: 'Custom Ratio',
                 settingKey: 'key-custom-ratio-slider-2',
                 defaultValue: 2.5,
+                color: Colors.green,
                 min: 1,
                 max: 5,
                 step: 0.1,
