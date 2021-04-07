@@ -336,7 +336,7 @@ class _AppSettingsState extends State<AppSettings> {
                 settingKey: 'key-color-picker',
                 title: 'Accent Color',
                 defaultValue: Colors.blue,
-                color:Colors.green,
+                color: Colors.green,
                 onChange: (value) {
                   debugPrint('key-color-picker: $value');
                 },
