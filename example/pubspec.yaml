@@ -1,5 +1,5 @@
 name: flutter_settings_screens_example
-description: Demonstrates how to use the flutter_settings_screens plugin.
+description: Demonstrates flutter_settings_screens plugin features.
 publish_to: 'none'
 
 environment:
@@ -11,10 +11,10 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^0.1.2
+  cupertino_icons: ^1.0.0
 
   #library to store the preference/settings using hive library
-  hive_flutter: ^0.2.1
+  hive_flutter: ^0.3.1
 
 dev_dependencies:
   flutter_test:

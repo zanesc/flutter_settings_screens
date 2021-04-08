@@ -38,7 +38,3 @@ lib/generated_plugin_registrant.dart
 pubspec.lock
 example/.flutter-plugins-dependencies
 example/pubspec.lock
-example/pubspec.lock
-example/ios/Podfile
-example/ios/Flutter/Debug.xcconfig
-example/ios/Flutter/Release.xcconfig

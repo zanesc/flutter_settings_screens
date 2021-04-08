@@ -15,7 +15,7 @@ class SharePreferenceCache extends CacheProvider {
     _preferences = await SharedPreferences.getInstance();
   }
 
-  get keys => getKeys();
+  Set get keys => getKeys();
 
   @override
   bool getBool(String key) {
@@ -58,22 +58,18 @@ class SharePreferenceCache extends CacheProvider {
   }
 
   @override
-  void setObject<T>(String key, T value) {
+  Future<void> setObject<T>(String key, T value) {
     if (value is int) {
-      _preferences.setInt(key, value);
-      return;
+      return _preferences.setInt(key, value);
     }
     if (value is double) {
-      _preferences.setDouble(key, value);
-      return;
+      return _preferences.setDouble(key, value);
     }
     if (value is bool) {
-      _preferences.setBool(key, value);
-      return;
+      return _preferences.setBool(key, value);
     }
     if (value is String) {
-      _preferences.setString(key, value);
-      return;
+      return _preferences.setString(key, value);
     }
     throw Exception('No Implementation Found');
   }
@@ -84,9 +80,8 @@ class SharePreferenceCache extends CacheProvider {
   }
 
   @override
-  Set<E> getKeys<E>() {
-    var storedValue = _preferences.getKeys();
-    return storedValue.cast<E>();
+  Set getKeys() {
+    return _preferences.getKeys();
   }
 
   @override

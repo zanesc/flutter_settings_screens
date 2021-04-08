@@ -61,10 +61,13 @@ class Settings {
   /// value is set properly.
   static void ensureCacheProvider() {
     assert(
-        _cacheProvider != null,
+        isInitialized,
         'Must call Settings.init(cacheProvider)'
         ' before using settings!');
   }
+
+  /// A getter to know if the settings are already initialized or not
+  static bool get isInitialized => _cacheProvider != null;
 
   /// This method is used for initializing the [_cacheProvider]
   /// instance.
@@ -101,12 +104,12 @@ class Settings {
   }
 
   /// method to set [value] using the [cacheProvider] for given [key]
-  static void setValue<T>(String key, T value) {
+  static Future<void> setValue<T>(String key, T value) async {
     ensureCacheProvider();
     if (value == null) {
       return _cacheProvider.remove(key);
     }
-    _cacheProvider.setObject<T>(key, value);
+    await _cacheProvider.setObject<T>(key, value);
   }
 
   /// method to clear all the cached data using the [cacheProvider]
@@ -152,8 +155,7 @@ class ValueChangeNotifier<T> extends ValueNotifier<T> {
 ///
 /// If a settings key is already added in the map, the new notifier
 /// is added to the list of notifiers
-Map<String, List<ValueChangeNotifier>> _onChangedNotifiers =
-    Map<String, List<ValueChangeNotifier>>();
+Map<String, List<ValueChangeNotifier>> _onChangedNotifiers = {};
 
 Map<String, List<ValueChangeNotifier>> _onChangeStartNotifiers;
 
@@ -206,8 +208,7 @@ class _ValueChangeObserverState<T> extends State<ValueChangeObserver<T>> {
 
   @override
   void initState() {
-    super.initState();
-    //if [cacheKey] is not found ,add new cache in the [cacheProvider] with [defaultValue]
+    //if [cacheKey] is not found, add new cache in the [cacheProvider] with [defaultValue]
     if (!Settings.containsKey(cacheKey)) {
       Settings.setValue<T>(cacheKey, defaultValue);
     }
@@ -229,29 +230,27 @@ class _ValueChangeObserverState<T> extends State<ValueChangeObserver<T>> {
 
     // add notifiers to [_notifiers] maps
     if (!_onChangedNotifiers.containsKey(cacheKey)) {
-      _onChangedNotifiers[cacheKey] = List<ValueChangeNotifier<T>>();
+      _onChangedNotifiers[cacheKey] = [];
     }
     _onChangedNotifiers[cacheKey].add(onChangedNotifier);
 
     if (onChangeStartNotifier != null) {
-      if (_onChangeStartNotifiers == null) {
-        _onChangeStartNotifiers = Map<String, List<ValueChangeNotifier>>();
-      }
+      _onChangeStartNotifiers ??= {};
       if (!_onChangeStartNotifiers.containsKey(cacheKey)) {
-        _onChangeStartNotifiers[cacheKey] = List<ValueChangeNotifier<T>>();
+        _onChangeStartNotifiers[cacheKey] = [];
       }
       _onChangeStartNotifiers[cacheKey].add(onChangeStartNotifier);
     }
 
     if (onChangeEndNotifier != null) {
-      if (_onChangeEndNotifiers == null) {
-        _onChangeEndNotifiers = Map<String, List<ValueChangeNotifier>>();
-      }
+      _onChangeEndNotifiers ??= {};
       if (!_onChangeEndNotifiers.containsKey(cacheKey)) {
-        _onChangeEndNotifiers[cacheKey] = List<ValueChangeNotifier<T>>();
+        _onChangeEndNotifiers[cacheKey] = [];
       }
       _onChangeEndNotifiers[cacheKey].add(onChangeEndNotifier);
     }
+
+    super.initState();
   }
 
   @override

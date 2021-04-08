@@ -5,15 +5,19 @@ import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'app_settings_page.dart';
 import 'cache_provider.dart';
 
-Future<void> main() async {
-  await initSettings();
-  runApp(MyApp());
+ValueNotifier<Color> accentColor;
+
+void main() {
+  initSettings().then((_) {
+    runApp(MyApp());
+  });
 }
 
 Future<void> initSettings() async {
   await Settings.init(
     cacheProvider: _isUsingHive ? HiveCache() : SharePreferenceCache(),
   );
+  accentColor = ValueNotifier(Colors.blueAccent);
 }
 
 bool _isDarkTheme = true;
@@ -39,20 +43,28 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'App Settings Demo',
-      theme: _isDarkTheme ? ThemeData.dark() : ThemeData.light(),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: Center(
-          child: Column(
-            children: <Widget>[
-              _buildThemeSwitch(context),
-              _buildPreferenceSwitch(context),
-              AppBody(),
-            ],
+    return ValueListenableBuilder<Color>(
+      valueListenable: accentColor,
+      builder: (_, color, __) => MaterialApp(
+        title: 'App Settings Demo',
+        theme: _isDarkTheme
+            ? ThemeData.dark().copyWith(accentColor: color)
+            : ThemeData.light().copyWith(accentColor: color),
+        home: Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+          ),
+          body: Center(
+            child: Column(
+              children: <Widget>[
+                _buildThemeSwitch(context),
+                _buildPreferenceSwitch(context),
+                SizedBox(
+                  height: 50.0,
+                ),
+                AppBody(),
+              ],
+            ),
           ),
         ),
       ),
@@ -65,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
       children: <Widget>[
         Text('Shared Pref'),
         Switch(
+            activeColor: Theme.of(context).accentColor,
             value: _isUsingHive,
             onChanged: (newVal) {
               if (kIsWeb) {
@@ -86,6 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
       children: <Widget>[
         Text('Light Theme'),
         Switch(
+            activeColor: Theme.of(context).accentColor,
             value: _isDarkTheme,
             onChanged: (newVal) {
               _isDarkTheme = newVal;
@@ -108,11 +122,14 @@ class _AppBodyState extends State<AppBody> {
     return Column(
       children: <Widget>[
         _buildClearCacheButton(context),
-        RaisedButton(
-          child: Text('open settings'),
+        SizedBox(
+          height: 25.0,
+        ),
+        ElevatedButton(
           onPressed: () {
             openAppSettings(context);
           },
+          child: Text('Start Demo'),
         ),
       ],
     );
@@ -125,8 +142,7 @@ class _AppBodyState extends State<AppBody> {
   }
 
   Widget _buildClearCacheButton(BuildContext context) {
-    return RaisedButton(
-      child: Text('Clear selected Cache'),
+    return ElevatedButton(
       onPressed: () {
         Settings.clearCache();
         showSnackBar(
@@ -134,12 +150,13 @@ class _AppBodyState extends State<AppBody> {
           'Cache cleared for selected cache.',
         );
       },
+      child: Text('Clear selected Cache'),
     );
   }
 }
 
 void showSnackBar(BuildContext context, String message) {
-  Scaffold.of(context).showSnackBar(
+  ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(
         message,
@@ -147,9 +164,7 @@ void showSnackBar(BuildContext context, String message) {
           color: Colors.white,
         ),
       ),
-      backgroundColor: Theme
-          .of(context)
-          .primaryColor,
+      backgroundColor: Theme.of(context).primaryColor,
     ),
   );
 }
